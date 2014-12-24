@@ -10,6 +10,9 @@ import android.opengl.GLSurfaceView.Renderer;
 
 public class MyGLSurfaceView extends GLSurfaceView implements Renderer{
 	
+	Triangle mTriangle;
+	Square mSquare;
+	
 	public MyGLSurfaceView(Context context){
         super(context);
         setEGLContextClientVersion(2);
@@ -25,6 +28,11 @@ public class MyGLSurfaceView extends GLSurfaceView implements Renderer{
 		
 		// 设置背景颜色
         GLES20.glClearColor(0.97f, 0.58f, 0.0f, 1.0f);
+       
+        // initialize a triangle
+        mTriangle = new Triangle();
+        // initialize a square
+        mSquare = new Square();
 	}
 
 	/**
@@ -43,5 +51,25 @@ public class MyGLSurfaceView extends GLSurfaceView implements Renderer{
 	public void onDrawFrame(GL10 gl) {
 		// 重绘背景
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+        mTriangle.draw();
+	}
+	
+	/**
+	 * 编译着色器
+	 * @param type
+	 * @param shaderCode
+	 * @return
+	 */
+	public static int loadShader(int type, String shaderCode){
+
+	    // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
+	    // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
+	    int shader = GLES20.glCreateShader(type);
+
+	    // add the source code to the shader and compile it
+	    GLES20.glShaderSource(shader, shaderCode);
+	    GLES20.glCompileShader(shader);
+
+	    return shader;
 	}
 }
