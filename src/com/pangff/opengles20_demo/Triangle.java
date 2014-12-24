@@ -14,6 +14,7 @@ public class Triangle {
 	int mColorHandle;
 	int vertexCount = 3;//顶点数
 	int vertexStride = COORDS_PER_VERTEX*4;//跨度
+	int mMVPMatrixHandle;
 	
 	// number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
@@ -52,7 +53,7 @@ public class Triangle {
         GLES20.glLinkProgram(mProgram);                  // creates OpenGL ES program executables
     }
     
-    public void draw() {
+    public void draw(float[] mvpMatrix) {
     		// 将program加入OpenGL ES环境中
         // Add program to OpenGL ES environment
         GLES20.glUseProgram(mProgram);
@@ -78,8 +79,15 @@ public class Triangle {
         // 设置三角形的颜色
         // Set color for drawing the triangle
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
+        
+        
+       // get handle to shape's transformation matrix
+        mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
 
-         // 画三角形
+        // Pass the projection and view transformation to the shader
+        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+
+        // 画三角形
         // Draw the triangle
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
         
@@ -92,9 +100,10 @@ public class Triangle {
      * 顶点着色器
      */
     private final String vertexShaderCode =
-    	    "attribute vec4 vPosition;" +
-    	    "void main() {" +
-    	    "  gl_Position = vPosition;" +
+    		 "uniform mat4 uMVPMatrix;   \n" +
+    	    "attribute vec4 vPosition; \n" +
+    	    "void main() {  \n" +
+    	    "  gl_Position = uMVPMatrix * vPosition; \n" +
     	    "}";
 
     /** 片着色器 **/
