@@ -1,31 +1,32 @@
 package com.pangff.opengles20_demo;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.Context;
-import android.content.pm.ConfigurationInfo;
-import android.opengl.GLSurfaceView;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+
+import com.pangff.opengles2_prepare_demo.R;
 
 public class MainActivity extends Activity {
 
-	private GLSurfaceView mGLView;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if(hasGLES20()){
-			mGLView = new MyGLSurfaceView(this);
-		}
-		setContentView(mGLView);
+		setContentView(R.layout.activity_main);
 	}
 	
-	/**
-	 * 判断是否支持es2.0
-	 * @return
-	 */
-	private boolean hasGLES20(){
-		ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
-		ConfigurationInfo info = am.getDeviceConfigurationInfo();
-		return info.reqGlEsVersion >=0x20000;
+	public void showTriangle(View view){
+		startOpenGl(0);
+	}
+	
+	public void showSquare(View view){
+		startOpenGl(1);
+	}
+
+	public void startOpenGl(int flag){
+		Intent intent = new Intent();
+		intent.putExtra("flag", flag);
+		intent.setClass(MainActivity.this, OpenGLActivity.class);
+		startActivity(intent);
 	}
 }
